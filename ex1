@@ -155,57 +155,60 @@ class PacmanProblem(search.Problem):
         #moves to ghost location
 
         #red ghost
-        legal_moves = self.ghost_legal_moves(state_copy,2)
-        row,col = self.locations[2]
-        # returns the move that is the closest to the packman
+        if self.locations[2] != None:
+            legal_moves = self.ghost_legal_moves(state_copy,2)
+            row,col = self.locations[2]
+            # returns the move that is the closest to the packman
 
-        if len(legal_moves) > 0:
-            if state_copy[row][col] == 21:
-                state_copy[row][col] = 11
-            if state_copy[row][col] == 20:
-                state_copy[row][col] = 10
-            dir = self.calculate_md(legal_moves,2)
-            self.move_ghost(state_copy,dir, 2, 21, 20)
+            if len(legal_moves) > 0:
+                if state_copy[row][col] == 21:
+                    state_copy[row][col] = 11
+                if state_copy[row][col] == 20:
+                    state_copy[row][col] = 10
+                dir = self.calculate_md(legal_moves,2)
+                self.move_ghost(state_copy,dir, 2, 21, 20)
 
         #blue ghost
-        legal_moves = self.ghost_legal_moves(state_copy, 3)
-        row, col = self.locations[3]
-        # returns the move that is the closest to the packman
+        if self.locations[3] != None:
+            legal_moves = self.ghost_legal_moves(state_copy, 3)
+            row, col = self.locations[3]
+            # returns the move that is the closest to the packman
 
-        if len(legal_moves) > 0:
-            if state_copy[row][col] == 31:
-                state_copy[row][col] = 11
-            if state_copy[row][col] == 30:
-                state_copy[row][col] = 10
-            dir = self.calculate_md(legal_moves, 3)
-            self.move_ghost(state_copy, dir, 3, 31, 30)
+            if len(legal_moves) > 0:
+                if state_copy[row][col] == 31:
+                    state_copy[row][col] = 11
+                if state_copy[row][col] == 30:
+                    state_copy[row][col] = 10
+                dir = self.calculate_md(legal_moves, 3)
+                self.move_ghost(state_copy, dir, 3, 31, 30)
 
         #yellow ghost
-        legal_moves = self.ghost_legal_moves(state_copy, 4)
-        row, col = self.locations[4]
-        # returns the move that is the closest to the packman
+        if self.locations[4] != None:
+            legal_moves = self.ghost_legal_moves(state_copy, 4)
+            row, col = self.locations[4]
+            # returns the move that is the closest to the packman
 
-        if len(legal_moves) > 0:
-            if state_copy[row][col] == 41:
-                state_copy[row][col] = 11
-            if state_copy[row][col] == 40:
-                state_copy[row][col] = 10
-            dir = self.calculate_md(legal_moves, 4)
-            self.move_ghost(state_copy, dir, 4, 41, 40)
+            if len(legal_moves) > 0:
+                if state_copy[row][col] == 41:
+                    state_copy[row][col] = 11
+                if state_copy[row][col] == 40:
+                    state_copy[row][col] = 10
+                dir = self.calculate_md(legal_moves, 4)
+                self.move_ghost(state_copy, dir, 4, 41, 40)
 
         #green ghost
-        legal_moves = self.ghost_legal_moves(state_copy, 5)
-        row, col = self.locations[5]
-        # returns the move that is the closest to the packman
+        if self.locations[5] != None:
+            legal_moves = self.ghost_legal_moves(state_copy, 5)
+            row, col = self.locations[5]
+            # returns the move that is the closest to the packman
 
-        if len(legal_moves) > 0:
-            if state_copy[row][col] == 51:
-                state_copy[row][col] = 11
-            if state_copy[row][col] == 50:
-                state_copy[row][col] = 10
-            dir = self.calculate_md(legal_moves, 5)
-            self.move_ghost(state_copy, dir, 5, 51, 50)
-        print("hello")
+            if len(legal_moves) > 0:
+                if state_copy[row][col] == 51:
+                    state_copy[row][col] = 11
+                if state_copy[row][col] == 50:
+                    state_copy[row][col] = 10
+                dir = self.calculate_md(legal_moves, 5)
+                self.move_ghost(state_copy, dir, 5, 51, 50)
         return tuple(tuple(inner_list) for inner_list in state_copy)
     def goal_test(self, state):
         """ given a state, checks if this is the goal state, compares to the created goal state"""
