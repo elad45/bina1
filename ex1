@@ -1,0 +1,237 @@
+import search
+import math
+import utils
+
+id="No numbers - I'm special!"
+
+""" Rules """
+RED = 20
+BLUE = 30
+YELLOW = 40
+GREEN = 50
+PACMAN = 77
+
+class PacmanProblem(search.Problem):
+    """This class implements a pacman problem"""
+    def __init__(self, initial):
+        """ Magic numbers for ghosts and Packman: 
+        2 - red, 3 - blue, 4 - yellow, 5 - green and 7 - Packman.""" 
+
+        self.locations = dict.fromkeys((7, 2, 3, 4, 5))
+        self.dead_end = False
+        for i in range(len(initial)):
+            for j in range(len(initial[0])):
+                if initial[i][j] == 77:
+                    self.locations[7] = (i, j)
+                elif initial[i][j] == 20 or initial[i][j] == 21:
+                    self.locations[2] = (i, j)
+                elif initial[i][j] == 30 or initial[i][j] == 31:
+                    self.locations[3] = (i, j)
+                elif initial[i][j] == 40 or initial[i][j] == 41:
+                    self.locations[4] = (i, j)
+                elif initial[i][j] == 50 or initial[i][j] == 51:
+                    self.locations[5] = (i, j)
+        print(self.locations)
+        """ Constructor only needs the initial state.
+        Don't forget to set the goal or implement the goal test"""
+        search.Problem.__init__(self, initial)
+
+                
+    def successor(self, state):
+        """ Generates the successor state """
+        moves = {'U', 'R', 'D', 'L'}
+        y,x = self.locations[7]
+
+        rows, cols = len(state), len(state[0])
+
+        # Check up
+        if y == 0 or state[y-1][x] == 99:
+            moves.remove('U')
+        # Check right
+        if x == cols-1 or state[y][x+1] == 99:
+            moves.remove('R')
+        # Check down
+        if y == rows-1 or state[y+1][x] == 99:
+            moves.remove('D')
+        # Check left
+        if x == 0 or state[y][x-1] == 99:
+            moves.remove('L')
+        moves = tuple(moves)
+        map = {}
+        for move in moves:
+            map[move] = self.result(state, move)
+
+    def new_position(self,move,key):
+        """given state and an action and return a new state"""
+        row, col = self.locations[key]
+        if move == 'U':
+            row -= 1
+        if move == 'R':
+            col += 1
+        if move == 'D':
+            row += 1
+        if move == 'L':
+            col -= 1
+        return row,col
+
+    def move_pacman(self,state,move):
+        state_copy = [list(row) for row in state]
+        row, col = self.locations[7]
+        state_copy[row][col] = 10
+        row, col = self.new_position(move,7)
+        # new packman location
+        new_location = state_copy[row][col]
+        if new_location == 21 or new_location == 20 or new_location == 31 or new_location == 30 or new_location == 40 or new_location == 41 or new_location == 50 or new_location == 51:
+            state_copy[row][col] = 88
+        if new_location == 11 or new_location == 10:
+            state_copy[row][col] = 77
+        return state_copy
+
+    def ghost_legal_moves(self,state,key):
+        i,j = self.locations[key]
+        moves = {'R', 'D', 'L', 'U'}
+        illegal_moves = {99,21,20,31,30,41,40,51,50}
+        no_rows, no_cols = len(state), len(state[0])
+        # Check up
+        if i == 0 or state[i-1][j] in illegal_moves:
+            moves.remove('U')
+        # Check right
+        if j == no_cols-1 or state[i][j+1] in illegal_moves:
+           moves.remove('R')
+        if i == no_rows-1 or state[i+1][j] in illegal_moves:
+            moves.remove('D')
+        if j == 0 or state[i][j-1] in illegal_moves:
+            moves.remove('L')
+        return moves
+    def calculate_md(self,moves,key):
+        if len(moves) == 0:
+            return None
+        min = math.inf
+        #packman
+        pi,pj=self.locations[7]
+        for move in moves:
+            i,j = self.new_position(move,key)
+            md = abs(i - pi) + abs(j - pj)
+            if md < min:
+                min = md
+                move_towards = move
+        return move_towards
+
+    def move_ghost(self, state_copy,dir, key, ghost_and_ball, ghost_not_ball):
+        row, col = self.locations[key]
+        if dir != None:
+
+            if dir == 'U':
+                if state_copy[row - 1][col] == 11:
+                    state_copy[row - 1][col] = ghost_and_ball
+                elif state_copy[row - 1][col] == 10:
+                    state_copy[row - 1][col] = ghost_not_ball
+                #self.locations[key] = (row - 1, col)
+            if dir == 'D':
+                if state_copy[row + 1][col] == 11:
+                    state_copy[row + 1][col] = ghost_and_ball
+                elif state_copy[row + 1][col] == 10:
+                    state_copy[row + 1][col] = ghost_not_ball
+                #self.locations[key] = (row + 1, col)
+            if dir == 'L':
+                if state_copy[row][col - 1] == 11:
+                    state_copy[row][col - 1] = ghost_and_ball
+                elif state_copy[row][col - 1] == 10:
+                    state_copy[row][col - 1] = ghost_not_ball
+                #self.locations[key] = (row, col - 1)
+            if dir == 'R':
+                if state_copy[row][col + 1] == 11:
+                    state_copy[row][col + 1] = ghost_and_ball
+                elif state_copy[row][col + 1] == 10:
+                    state_copy[row][col + 1] = ghost_not_ball
+                #self.locations[key] = (row, col + 1)
+
+    def result(self, state, move):
+        """given state and an action and return a new state"""
+        state_copy = self.move_pacman(state, move)
+
+        print(state_copy)
+        ######finish with packman
+        #moves to ghost location
+
+        #red ghost
+        legal_moves = self.ghost_legal_moves(state_copy,2)
+        row,col = self.locations[2]
+        # returns the move that is the closest to the packman
+
+        if len(legal_moves) > 0:
+            if state_copy[row][col] == 21:
+                state_copy[row][col] = 11
+            if state_copy[row][col] == 20:
+                state_copy[row][col] = 10
+            dir = self.calculate_md(legal_moves,2)
+            self.move_ghost(state_copy,dir, 2, 21, 20)
+
+        #blue ghost
+        legal_moves = self.ghost_legal_moves(state_copy, 3)
+        row, col = self.locations[3]
+        # returns the move that is the closest to the packman
+
+        if len(legal_moves) > 0:
+            if state_copy[row][col] == 31:
+                state_copy[row][col] = 11
+            if state_copy[row][col] == 30:
+                state_copy[row][col] = 10
+            dir = self.calculate_md(legal_moves, 3)
+            self.move_ghost(state_copy, dir, 3, 31, 30)
+
+        #yellow ghost
+        legal_moves = self.ghost_legal_moves(state_copy, 4)
+        row, col = self.locations[4]
+        # returns the move that is the closest to the packman
+
+        if len(legal_moves) > 0:
+            if state_copy[row][col] == 41:
+                state_copy[row][col] = 11
+            if state_copy[row][col] == 40:
+                state_copy[row][col] = 10
+            dir = self.calculate_md(legal_moves, 4)
+            self.move_ghost(state_copy, dir, 4, 41, 40)
+
+        #green ghost
+        legal_moves = self.ghost_legal_moves(state_copy, 5)
+        row, col = self.locations[5]
+        # returns the move that is the closest to the packman
+
+        if len(legal_moves) > 0:
+            if state_copy[row][col] == 51:
+                state_copy[row][col] = 11
+            if state_copy[row][col] == 50:
+                state_copy[row][col] = 10
+            dir = self.calculate_md(legal_moves, 5)
+            self.move_ghost(state_copy, dir, 5, 51, 50)
+        print("hello")
+        return tuple(tuple(inner_list) for inner_list in state_copy)
+    def goal_test(self, state):
+        """ given a state, checks if this is the goal state, compares to the created goal state"""
+        has_ball = False
+        for row in range(len(state)):
+            for cols in range(len(state[0])):
+                if state[row][cols] == 88:
+                    return False
+                if state[row][cols] == 11 or state[row][cols] == 21 or state[row][cols] == 31 or state[row][
+                    cols] == 41 or state[row][cols] == 51:
+                    has_ball = True
+        if has_ball == False:
+            return True
+
+    def h(self, node):
+        """ This is the heuristic. It get a node (not a state)
+        and returns a goal distance estimate"""
+        utils.raiseNotDefined()
+
+def create_pacman_problem(game):
+    print ("<<create_pacman_problem")
+    """ Create a pacman problem, based on the description.
+    game - matrix as it was described in the pdf file"""
+    return PacmanProblem(game)
+
+game =()
+
+
+create_pacman_problem(game)
