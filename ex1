@@ -2,7 +2,7 @@ import search
 import math
 import utils
 
-id="No numbers - I'm special!"
+id="315944611"
 
 """ Rules """
 RED = 20
@@ -15,8 +15,7 @@ class PacmanProblem(search.Problem):
     """This class implements a pacman problem"""
     def __init__(self, initial):
         """ Magic numbers for ghosts and Packman: 
-        2 - red, 3 - blue, 4 - yellow, 5 - green and 7 - Packman.""" 
-
+        2 - red, 3 - blue, 4 - yellow, 5 - green and 7 - Packman."""
         self.locations = dict.fromkeys((7, 2, 3, 4, 5))
         self.dead_end = False
         for i in range(len(initial)):
@@ -31,14 +30,28 @@ class PacmanProblem(search.Problem):
                     self.locations[4] = (i, j)
                 elif initial[i][j] == 50 or initial[i][j] == 51:
                     self.locations[5] = (i, j)
-        print(self.locations)
+        #print(self.locations)
         """ Constructor only needs the initial state.
         Don't forget to set the goal or implement the goal test"""
         search.Problem.__init__(self, initial)
 
-                
+
     def successor(self, state):
         """ Generates the successor state """
+        print(state)
+        for i in range(len(state)):
+            for j in range(len(state[0])):
+                if state[i][j] == 77:
+                    self.locations[7] = (i, j)
+                elif state[i][j] == 20 or state[i][j] == 21:
+                    self.locations[2] = (i, j)
+                elif state[i][j] == 30 or state[i][j] == 31:
+                    self.locations[3] = (i, j)
+                elif state[i][j] == 40 or state[i][j] == 41:
+                    self.locations[4] = (i, j)
+                elif state[i][j] == 50 or state[i][j] == 51:
+                    self.locations[5] = (i, j)
+
         moves = {'U', 'R', 'D', 'L'}
         y,x = self.locations[7]
 
@@ -60,6 +73,8 @@ class PacmanProblem(search.Problem):
         map = {}
         for move in moves:
             map[move] = self.result(state, move)
+        #print(tuple(map.items()))
+        return tuple(map.items())
 
     def new_position(self,move,key):
         """given state and an action and return a new state"""
@@ -76,12 +91,14 @@ class PacmanProblem(search.Problem):
 
     def move_pacman(self,state,move):
         state_copy = [list(row) for row in state]
+        collides = [21,20,31,30,41,40,51,50]
         row, col = self.locations[7]
         state_copy[row][col] = 10
         row, col = self.new_position(move,7)
+        self.locations[7] = (row, col)
         # new packman location
         new_location = state_copy[row][col]
-        if new_location == 21 or new_location == 20 or new_location == 31 or new_location == 30 or new_location == 40 or new_location == 41 or new_location == 50 or new_location == 51:
+        if new_location in collides:
             state_copy[row][col] = 88
         if new_location == 11 or new_location == 10:
             state_copy[row][col] = 77
@@ -89,10 +106,13 @@ class PacmanProblem(search.Problem):
 
     def ghost_legal_moves(self,state,key):
         i,j = self.locations[key]
+
         moves = {'R', 'D', 'L', 'U'}
         illegal_moves = {99,21,20,31,30,41,40,51,50}
         no_rows, no_cols = len(state), len(state[0])
         # Check up
+        if state[i][j] == 88:
+            return {}
         if i == 0 or state[i-1][j] in illegal_moves:
             moves.remove('U')
         # Check right
@@ -126,31 +146,53 @@ class PacmanProblem(search.Problem):
                     state_copy[row - 1][col] = ghost_and_ball
                 elif state_copy[row - 1][col] == 10:
                     state_copy[row - 1][col] = ghost_not_ball
-                #self.locations[key] = (row - 1, col)
+                elif state_copy[row - 1][col] == 77:
+                    state_copy[row - 1][col] = 88
+
+                self.locations[key] = (row - 1, col)
             if dir == 'D':
                 if state_copy[row + 1][col] == 11:
                     state_copy[row + 1][col] = ghost_and_ball
                 elif state_copy[row + 1][col] == 10:
                     state_copy[row + 1][col] = ghost_not_ball
-                #self.locations[key] = (row + 1, col)
+                elif state_copy[row + 1][col] == 77:
+                    state_copy[row + 1][col] = 88
+                self.locations[key] = (row + 1, col)
             if dir == 'L':
                 if state_copy[row][col - 1] == 11:
                     state_copy[row][col - 1] = ghost_and_ball
                 elif state_copy[row][col - 1] == 10:
                     state_copy[row][col - 1] = ghost_not_ball
-                #self.locations[key] = (row, col - 1)
+                elif state_copy[row ][col-1] == 77:
+                    state_copy[row][col-1] = 88
+                self.locations[key] = (row, col - 1)
             if dir == 'R':
                 if state_copy[row][col + 1] == 11:
                     state_copy[row][col + 1] = ghost_and_ball
                 elif state_copy[row][col + 1] == 10:
                     state_copy[row][col + 1] = ghost_not_ball
-                #self.locations[key] = (row, col + 1)
+                elif state_copy[row][col+1] == 77:
+                    state_copy[row][col+1] = 88
+                self.locations[key] = (row, col + 1)
 
     def result(self, state, move):
+        for i in range(len(state)):
+            for j in range(len(state[0])):
+                if state[i][j] == 77:
+                    self.locations[7] = (i, j)
+                elif state[i][j] == 20 or state[i][j] == 21:
+                    self.locations[2] = (i, j)
+                elif state[i][j] == 30 or state[i][j] == 31:
+                    self.locations[3] = (i, j)
+                elif state[i][j] == 40 or state[i][j] == 41:
+                    self.locations[4] = (i, j)
+                elif state[i][j] == 50 or state[i][j] == 51:
+                    self.locations[5] = (i, j)
+
         """given state and an action and return a new state"""
         state_copy = self.move_pacman(state, move)
 
-        print(state_copy)
+        #print(state_copy)
         ######finish with packman
         #moves to ghost location
 
@@ -212,16 +254,14 @@ class PacmanProblem(search.Problem):
         return tuple(tuple(inner_list) for inner_list in state_copy)
     def goal_test(self, state):
         """ given a state, checks if this is the goal state, compares to the created goal state"""
-        has_ball = False
+        indicates_ball = [11,21, 31, 41, 51]
         for row in range(len(state)):
             for cols in range(len(state[0])):
                 if state[row][cols] == 88:
                     return False
-                if state[row][cols] == 11 or state[row][cols] == 21 or state[row][cols] == 31 or state[row][
-                    cols] == 41 or state[row][cols] == 51:
-                    has_ball = True
-        if has_ball == False:
-            return True
+                if state[row][cols] in indicates_ball:
+                    return False
+        return True
 
     def h(self, node):
         """ This is the heuristic. It get a node (not a state)
