@@ -18,6 +18,7 @@ class PacmanProblem(search.Problem):
         2 - red, 3 - blue, 4 - yellow, 5 - green and 7 - Packman."""
         self.locations = dict.fromkeys((7, 2, 3, 4, 5))
         self.dead_end = False
+        self.counter = 0
         #print(self.locations)
         """ Constructor only needs the initial state.
         Don't forget to set the goal or implement the goal test"""
@@ -65,6 +66,8 @@ class PacmanProblem(search.Problem):
         return False
     def successor(self, state):
         """ Generates the successor state """
+        self.counter+=1
+        #print(self.counter)
         #print("this is state")
         #print(state)
         is_end = self.check_end(state)
@@ -255,9 +258,14 @@ class PacmanProblem(search.Problem):
         return True
 
     def h(self, node):
-        """ This is the heuristic. It get a node (not a state)
-        and returns a goal distance estimate"""
-        utils.raiseNotDefined()
+        counter = 0
+        list = [11,21,31,41,51]
+        matrix = node.state
+        for i in range (len(matrix)):
+            for j in range(len(matrix[0])):
+                if matrix[i][j] in list:
+                    counter +=1
+        return counter
 
 def create_pacman_problem(game):
     print ("<<create_pacman_problem")
