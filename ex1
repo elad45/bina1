@@ -67,7 +67,7 @@ class PacmanProblem(search.Problem):
     def successor(self, state):
         """ Generates the successor state """
         self.counter+=1
-        #print(self.counter)
+        print(self.counter)
         #print("this is state")
         #print(state)
         is_end = self.check_end(state)
@@ -264,7 +264,7 @@ class PacmanProblem(search.Problem):
         for i in range (len(matrix)):
             for j in range(len(matrix[0])):
                 if matrix[i][j] in list:
-                    counter +=1
+                    counter += 1
         return counter
 
 def create_pacman_problem(game):
