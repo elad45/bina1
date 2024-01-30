@@ -18,27 +18,12 @@ class PacmanProblem(search.Problem):
         2 - red, 3 - blue, 4 - yellow, 5 - green and 7 - Packman."""
         self.locations = dict.fromkeys((7, 2, 3, 4, 5))
         self.dead_end = False
-        for i in range(len(initial)):
-            for j in range(len(initial[0])):
-                if initial[i][j] == 77:
-                    self.locations[7] = (i, j)
-                elif initial[i][j] == 20 or initial[i][j] == 21:
-                    self.locations[2] = (i, j)
-                elif initial[i][j] == 30 or initial[i][j] == 31:
-                    self.locations[3] = (i, j)
-                elif initial[i][j] == 40 or initial[i][j] == 41:
-                    self.locations[4] = (i, j)
-                elif initial[i][j] == 50 or initial[i][j] == 51:
-                    self.locations[5] = (i, j)
         #print(self.locations)
         """ Constructor only needs the initial state.
         Don't forget to set the goal or implement the goal test"""
         search.Problem.__init__(self, initial)
 
-
-    def successor(self, state):
-        """ Generates the successor state """
-        print(state)
+    def set_locations(self,state):
         for i in range(len(state)):
             for j in range(len(state[0])):
                 if state[i][j] == 77:
@@ -51,28 +36,46 @@ class PacmanProblem(search.Problem):
                     self.locations[4] = (i, j)
                 elif state[i][j] == 50 or state[i][j] == 51:
                     self.locations[5] = (i, j)
-
-        moves = {'U', 'R', 'D', 'L'}
-        y,x = self.locations[7]
+        return self.locations
+    def packman_legal_moves(self, state):
+        moves = ['R', 'D', 'L', 'U']
+        y, x = self.locations[7]
 
         rows, cols = len(state), len(state[0])
 
         # Check up
-        if y == 0 or state[y-1][x] == 99:
+        if y == 0 or state[y - 1][x] == 99:
             moves.remove('U')
         # Check right
-        if x == cols-1 or state[y][x+1] == 99:
+        if x == cols - 1 or state[y][x + 1] == 99:
             moves.remove('R')
         # Check down
-        if y == rows-1 or state[y+1][x] == 99:
+        if y == rows - 1 or state[y + 1][x] == 99:
             moves.remove('D')
         # Check left
-        if x == 0 or state[y][x-1] == 99:
+        if x == 0 or state[y][x - 1] == 99:
             moves.remove('L')
-        moves = tuple(moves)
+        return tuple(moves)
+
+    def check_end(self,state):
+        for i in range(len(state)):
+            for j in range(len(state[0])):
+                if state[i][j] == 88:
+                    return True
+        return False
+    def successor(self, state):
+        """ Generates the successor state """
+        #print("this is state")
+        #print(state)
+        is_end = self.check_end(state)
+        if is_end:
+            return ()
+        self.set_locations(state)
+        moves = self.packman_legal_moves(state)
         map = {}
         for move in moves:
             map[move] = self.result(state, move)
+        #print("this is result of the state")
         #print(tuple(map.items()))
         return tuple(map.items())
 
@@ -107,12 +110,12 @@ class PacmanProblem(search.Problem):
     def ghost_legal_moves(self,state,key):
         i,j = self.locations[key]
 
-        moves = {'R', 'D', 'L', 'U'}
+        moves = ['R', 'D', 'L', 'U']
         illegal_moves = {99,21,20,31,30,41,40,51,50}
         no_rows, no_cols = len(state), len(state[0])
         # Check up
         if state[i][j] == 88:
-            return {}
+            return ()
         if i == 0 or state[i-1][j] in illegal_moves:
             moves.remove('U')
         # Check right
@@ -176,19 +179,7 @@ class PacmanProblem(search.Problem):
                 self.locations[key] = (row, col + 1)
 
     def result(self, state, move):
-        for i in range(len(state)):
-            for j in range(len(state[0])):
-                if state[i][j] == 77:
-                    self.locations[7] = (i, j)
-                elif state[i][j] == 20 or state[i][j] == 21:
-                    self.locations[2] = (i, j)
-                elif state[i][j] == 30 or state[i][j] == 31:
-                    self.locations[3] = (i, j)
-                elif state[i][j] == 40 or state[i][j] == 41:
-                    self.locations[4] = (i, j)
-                elif state[i][j] == 50 or state[i][j] == 51:
-                    self.locations[5] = (i, j)
-
+        self.set_locations(state)
         """given state and an action and return a new state"""
         state_copy = self.move_pacman(state, move)
 
